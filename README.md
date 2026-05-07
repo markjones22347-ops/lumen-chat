@@ -354,6 +354,293 @@ The schema automatically creates these policies when you run the SQL:
 4. Click **"Save"**
 5. Redeploy your project if needed
 
+## Render Deployment
+
+Render is a cloud platform that offers free hosting for web services, static sites, and databases. This guide will walk you through deploying Lumen to Render.
+
+### Prerequisites
+
+Before deploying to Render, make sure you have:
+- A GitHub account with your code pushed to GitHub
+- A Supabase project set up with the database schema completed
+- Your Supabase project URL and anon key ready
+
+### Step 1: Create a Render Account
+
+1. Go to [https://render.com](https://render.com)
+2. Click the **"Sign Up"** button in the top right
+3. Sign up using your GitHub account (recommended) or email
+4. Complete the account setup process
+5. You may need to verify your email address
+
+### Step 2: Connect Your GitHub Repository
+
+1. After signing in, you'll be taken to your Render dashboard
+2. Click the **"New +"** button in the top right
+3. Select **"Web Service"** from the dropdown
+4. If prompted, authorize Render to access your GitHub repositories
+5. You'll see a list of your GitHub repositories
+
+### Step 3: Select Your Repository
+
+1. Find and select the `lumen-chat` repository (or your repository name)
+2. If you don't see it, click **"Connect a different repository"** and search for it
+3. Make sure you're selecting the correct repository
+
+### Step 4: Configure the Web Service
+
+Render will automatically detect that this is a Next.js application. Configure the following settings:
+
+**Name:**
+- Enter a name for your service (e.g., `lumen-chat`)
+- This will be part of your deployment URL: `https://lumen-chat.onrender.com`
+
+**Region:**
+- Select a region closest to your users
+- Common choices: Oregon (US), Frankfurt (EU), Singapore (Asia)
+- This affects latency but not functionality
+
+**Branch:**
+- Select `main` (or your default branch)
+- Render will deploy from this branch
+
+**Runtime:**
+- Render should automatically detect **Node.js**
+- If not, select **Node** from the dropdown
+- Set the Node version to `18` or higher
+
+**Build Command:**
+- Render should auto-detect: `npm run build`
+- If not, enter: `npm run build`
+
+**Start Command:**
+- Render should auto-detect: `npm start`
+- If not, enter: `npm start`
+
+**Root Directory:**
+- Leave this blank (root of the repository)
+
+### Step 5: Add Environment Variables
+
+This is a critical step. Your Supabase credentials must be added as environment variables.
+
+1. Scroll down to the **"Environment Variables"** section
+2. Click **"Add Environment Variable"**
+3. Add the first variable:
+   - **Key**: `NEXT_PUBLIC_SUPABASE_URL`
+   - **Value**: Your Supabase project URL (e.g., `https://xxxxxxxxxxxxx.supabase.co`)
+   - Click **"Save"**
+4. Add the second variable:
+   - **Key**: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **Value**: Your Supabase anon key (long string starting with `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`)
+   - Click **"Save"**
+
+**Important Notes:**
+- Make sure the variable names match exactly (case-sensitive)
+- Do not include quotes around the values
+- These are the same values you used in `.env.local` locally
+
+### Step 6: Configure Advanced Settings (Optional)
+
+**Instance Type:**
+- **Free**: Free tier (recommended for testing)
+  - Limited resources, may have cold starts
+  - Spins down after 15 minutes of inactivity
+  - Can take up to 30 seconds to wake up
+- **Standard**: Paid tier ($7/month starting)
+  - Better performance
+  - No cold starts
+  - Suitable for production
+
+**Environment:**
+- Leave as **Production** for live deployment
+
+### Step 7: Deploy the Application
+
+1. Review all your settings
+2. Click the **"Create Web Service"** button at the bottom
+3. Render will begin the deployment process
+4. You'll see a live log of the deployment progress
+
+### Step 8: Monitor Deployment
+
+The deployment process typically takes 2-5 minutes and includes:
+1. Cloning your repository
+2. Installing dependencies (`npm install`)
+3. Building the application (`npm run build`)
+4. Starting the server (`npm start`)
+
+You can monitor the progress in the **"Logs"** tab. Look for:
+- Green checkmarks for successful steps
+- Any red error messages that need attention
+
+### Step 9: Access Your Application
+
+Once deployment is complete:
+1. You'll see a success message
+2. Click on the URL provided (e.g., `https://lumen-chat.onrender.com`)
+3. Your Lumen chat application should now be live!
+
+### Step 10: Verify the Deployment
+
+1. Test the home page loads correctly
+2. Try creating a group
+3. Test the chat functionality
+4. Test the calendar feature
+5. Test sticker uploads
+
+### Automatic Deploys
+
+Render can automatically redeploy when you push changes to GitHub:
+
+1. Go to your web service in Render
+2. Click on the **"Events"** tab
+3. Automatic deploys are enabled by default
+4. When you push to the connected branch, Render will:
+   - Detect the new commit
+   - Automatically build and deploy
+   - Update your live application
+
+To disable automatic deploys:
+1. Go to **Settings** → **Build & Deploy**
+2. Toggle off **"Auto-Deploy"**
+
+### Manual Deploys
+
+To manually trigger a deploy:
+1. Go to your web service in Render
+2. Click the **"Manual Deploy"** button in the top right
+3. Select **"Clear build cache & deploy"** (recommended for major changes)
+4. Or select **"Deploy latest commit"** for quick updates
+
+### Custom Domain (Optional)
+
+To use a custom domain instead of the default `.onrender.com` URL:
+
+1. Go to your web service in Render
+2. Click on **Settings** → **Custom Domains**
+3. Click **"Add Custom Domain"**
+4. Enter your domain (e.g., `chat.yourdomain.com`)
+5. Follow the DNS instructions provided by Render
+6. Update your domain's DNS records as instructed
+7. Wait for DNS propagation (can take up to 24 hours)
+
+### Viewing Logs
+
+To view application logs:
+1. Go to your web service in Render
+2. Click on the **"Logs"** tab
+3. You'll see real-time logs from your application
+4. Common logs to check:
+   - Build logs (during deployment)
+   - Server logs (runtime errors)
+   - Access logs (incoming requests)
+
+### Scaling Your Application
+
+If you need more resources:
+
+1. Go to your web service in Render
+2. Click on **Settings** → **Scaling**
+3. Adjust the following:
+   - **Instance Type**: Upgrade to Standard or Pro
+   - **Min Instances**: Minimum number of instances running
+   - **Max Instances**: Maximum number of instances (auto-scaling)
+   - **RAM**: Increase memory allocation
+   - **CPU**: Increase CPU allocation
+
+### Render Free Tier Limitations
+
+The free tier has some limitations:
+- **Cold Starts**: Service spins down after 15 minutes of inactivity
+- **Wake-up Time**: Can take 10-30 seconds to respond after being idle
+- **Build Time**: Longer build times (up to 15 minutes)
+- **Resource Limits**: Limited CPU and RAM
+- **Disk Space**: Limited disk storage
+
+For production use, consider upgrading to the Standard tier.
+
+### Troubleshooting Render Deployment
+
+**Issue: Build fails with "Cannot find module 'next'"**
+
+**Solution**: Make sure `package.json` includes all dependencies. Render runs `npm install` during build.
+
+**Issue: Environment variables not working**
+
+**Solution**:
+1. Check that variable names match exactly: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. Make sure values don't have extra quotes or spaces
+3. After adding variables, you may need to redeploy
+
+**Issue: Application shows "404 Not Found"**
+
+**Solution**:
+1. Check the build logs for errors
+2. Make sure the build command is `npm run build`
+3. Make sure the start command is `npm start`
+4. Verify Next.js is building correctly
+
+**Issue: Realtime not working on Render**
+
+**Solution**:
+1. Verify Supabase realtime is enabled for `messages` and `events` tables
+2. Check that your Supabase URL is correct (no typos)
+3. Ensure your anon key is correct
+4. Check browser console for WebSocket errors
+
+**Issue: Slow performance / cold starts**
+
+**Solution**:
+1. This is normal on the free tier
+2. Upgrade to Standard tier for better performance
+3. Consider using a cron job to keep the service warm
+
+**Issue: Deployment stuck in "Building" state**
+
+**Solution**:
+1. Check the build logs for specific errors
+2. Try "Clear build cache & deploy"
+3. Check if dependencies are correct in `package.json`
+4. Verify Node version compatibility
+
+**Issue: Sticker uploads failing**
+
+**Solution**:
+1. Verify Supabase Storage bucket is set to public
+2. Check that environment variables are set correctly
+3. Check browser console for CORS errors
+4. Verify the bucket name is exactly `stickers`
+
+### Render vs Vercel Comparison
+
+| Feature | Render | Vercel |
+|---------|--------|--------|
+| Free Tier | Yes (with limitations) | Yes (generous) |
+| Cold Starts | Yes (free tier) | No |
+| Build Time | Slower (free) | Fast |
+| Edge Functions | Limited | Excellent |
+| Custom Domains | Free | Free |
+| SSL Certificates | Free | Free |
+| Analytics | Basic | Advanced |
+| Preview Deployments | Manual | Automatic |
+| Next.js Support | Good | Excellent |
+
+### Production Checklist
+
+Before going live on Render:
+
+- [ ] Supabase project is fully set up with database schema
+- [ ] Realtime is enabled for `messages` and `events` tables
+- [ ] Storage bucket `stickers` is created and public
+- [ ] Environment variables are correctly set in Render
+- [ ] Test all features: chat, calendar, stickers
+- [ ] Verify realtime updates work across multiple browsers
+- [ ] Check for any console errors in the browser
+- [ ] Set up monitoring/alerts if using paid tier
+- [ ] Consider setting up a custom domain
+- [ ] Document your deployment process for future updates
+
 ## GitHub Push Instructions
 
 ### Initial Push
