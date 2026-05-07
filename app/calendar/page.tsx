@@ -40,6 +40,8 @@ export default function CalendarPage() {
   }, [router, user, group]);
 
   const fetchEvents = async () => {
+    if (!group) return;
+    
     try {
       const { data, error } = await supabase
         .from('events')
@@ -57,6 +59,8 @@ export default function CalendarPage() {
   };
 
   const subscribeToEvents = () => {
+    if (!group) return;
+    
     supabase
       .channel('events')
       .on(
@@ -139,8 +143,8 @@ export default function CalendarPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm p-4 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">{group.name} Calendar</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {group.code}</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">{group?.name} Calendar</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {group?.code}</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => router.push('/chat')} variant="ghost" size="sm">
@@ -201,7 +205,7 @@ export default function CalendarPage() {
                         {format(new Date(event.date), 'PPP')}
                       </div>
                     </div>
-                    {event.created_by === user.id && (
+                    {event.created_by === user?.id && (
                       <Button
                         onClick={() => handleDeleteEvent(event.id)}
                         variant="danger"

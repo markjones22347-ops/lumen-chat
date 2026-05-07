@@ -48,6 +48,8 @@ export default function ChatPage() {
   };
 
   const fetchMessages = async () => {
+    if (!group) return;
+    
     try {
       const { data, error } = await supabase
         .from('messages')
@@ -65,6 +67,8 @@ export default function ChatPage() {
   };
 
   const subscribeToMessages = () => {
+    if (!group) return;
+    
     supabase
       .channel('messages')
       .on(
@@ -171,8 +175,8 @@ export default function ChatPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm p-4 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">{group.name}</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {group.code}</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">{group?.name}</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {group?.code}</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => router.push('/calendar')} variant="ghost" size="sm">
@@ -192,7 +196,7 @@ export default function ChatPage() {
           </div>
         ) : (
           messages.map((message) => {
-            const isOwnMessage = message.user_id === user.id;
+            const isOwnMessage = message.user_id === user?.id;
             return (
               <div
                 key={message.id}
