@@ -43,34 +43,46 @@ export default function Home() {
 
     setLoading(true);
     try {
+      console.log('Setting nickname:', nickname.trim());
+      
       const { data: existingUser, error: checkError } = await supabase
         .from('users')
         .select('*')
         .eq('nickname', nickname.trim())
         .single();
 
+      console.log('Existing user check:', existingUser, checkError);
+
       if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Check error:', checkError);
         throw checkError;
       }
 
       if (existingUser) {
         storage.setUser({ id: existingUser.id, nickname: existingUser.nickname });
+        console.log('Using existing user:', existingUser);
       } else {
+        console.log('Creating new user...');
         const { data: newUser, error: insertError } = await supabase
           .from('users')
           .insert([{ nickname: nickname.trim() }])
           .select()
           .single();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw insertError;
+        }
 
         storage.setUser({ id: newUser.id, nickname: newUser.nickname });
+        console.log('Created new user:', newUser);
       }
 
       toast.success('Nickname set!');
       setShowCreate(true);
       setShowJoin(true);
     } catch (error: any) {
+      console.error('Nickname set error:', error);
       toast.error(error.message || 'Failed to set nickname');
     } finally {
       setLoading(false);
@@ -171,11 +183,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-md transition-all duration-300 hover:shadow-3xl">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Lumen</h1>
-          <p className="text-gray-600 dark:text-gray-400">Private group chat & planning</p>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 animate-pulse">
+            Lumen
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-lg">Private group chat & planning</p>
         </div>
 
         <div className="space-y-4">
@@ -186,13 +200,17 @@ export default function Home() {
             onChange={(e) => setNickname(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSetNickname()}
           />
-          <Button onClick={handleSetNickname} disabled={loading} className="w-full">
+          <Button 
+            onClick={handleSetNickname} 
+            disabled={loading} 
+            className="w-full transition-all duration-200 hover:scale-105 active:scale-95"
+          >
             {loading ? <LoadingSpinner /> : 'Set Nickname'}
           </Button>
         </div>
 
         {showCreate && showJoin && (
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4">
+          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4 animate-fade-in">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Create a Group</h3>
               <Input
@@ -201,7 +219,11 @@ export default function Home() {
                 onChange={(e) => setGroupName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleCreateGroup()}
               />
-              <Button onClick={handleCreateGroup} disabled={loading} className="w-full mt-2">
+              <Button 
+                onClick={handleCreateGroup} 
+                disabled={loading} 
+                className="w-full mt-2 transition-all duration-200 hover:scale-105 active:scale-95"
+              >
                 {loading ? <LoadingSpinner /> : 'Create Group'}
               </Button>
             </div>
@@ -214,7 +236,12 @@ export default function Home() {
                 onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                 onKeyPress={(e) => e.key === 'Enter' && handleJoinGroup()}
               />
-              <Button onClick={handleJoinGroup} disabled={loading} variant="secondary" className="w-full mt-2">
+              <Button 
+                onClick={handleJoinGroup} 
+                disabled={loading} 
+                variant="secondary" 
+                className="w-full mt-2 transition-all duration-200 hover:scale-105 active:scale-95"
+              >
                 {loading ? <LoadingSpinner /> : 'Join Group'}
               </Button>
             </div>
