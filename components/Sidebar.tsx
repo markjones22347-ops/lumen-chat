@@ -9,7 +9,7 @@ import Button from './Button';
 import Input from './Input';
 import Modal from './Modal';
 import toast from 'react-hot-toast';
-import { Plus, Hash, LogOut, Settings } from 'lucide-react';
+import { Plus, Hash, LogOut, Settings, UserX } from 'lucide-react';
 
 interface SidebarProps {
   currentGroupId?: string;
@@ -116,9 +116,17 @@ export default function Sidebar({ currentGroupId }: SidebarProps) {
 
       if (error) throw error;
 
+      // Update localStorage if this is the current group
+      const currentGroup = storage.getGroup();
+      if (currentGroup && currentGroup.id === selectedGroup.id) {
+        storage.setGroup({ ...currentGroup, name: groupName.trim() });
+      }
+
       toast.success('Group updated!');
       setShowSettingsModal(false);
       fetchUserGroups();
+      // Force page refresh to show new name in header
+      window.location.reload();
     } catch (error: any) {
       toast.error(error.message || 'Failed to update group');
     } finally {
@@ -139,6 +147,12 @@ export default function Sidebar({ currentGroupId }: SidebarProps) {
       if (error) throw error;
 
       toast.success('Left group');
+      
+      // If leaving current group, clear it from localStorage
+      if (currentGroupId === groupId) {
+        storage.clearGroup();
+      }
+      
       fetchUserGroups();
       if (currentGroupId === groupId) {
         router.push('/');
@@ -148,17 +162,31 @@ export default function Sidebar({ currentGroupId }: SidebarProps) {
     }
   };
 
+  const handleSignOut = () => {
+    storage.clearAll();
+    toast.success('Signed out');
+    router.push('/');
+  };
+
   return (
     <>
-      <div className="w-64 bg-gray-900 dark:bg-gray-950 flex flex-col h-full">
+      <div className="w-64 bg-gray-900 dark:bg-gray-950 flex flex-col h-screen">
         {/* Header */}
-        <div className="p-4 border-b border-gray-800">
-          <h2 className="text-white font-bold text-lg">Lumen</h2>
-          <p className="text-gray-400 text-sm">{user?.nickname}</p>
+        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+          <div>
+            <h2 className="text-white font-bold text-lg">Lumen</h2>
+            <p className="text-gray-400 text-sm">{user?.nickname}</p>
+          </div>
         </div>
 
         {/* Groups List */}
         <div className="flex-1 overflow-y-auto p-2">
+          {groups.length === 0 ? (
+            <div className="text-gray-500 text-sm text-center mt-8 px-4">
+              <p>No groups joined yet.</p>
+              <p className="mt-1">Click below to join one!</p>
+            </div>
+          ) : (
           <div className="space-y-1">
             {groups.map((group) => (
               <div
@@ -212,16 +240,25 @@ export default function Sidebar({ currentGroupId }: SidebarProps) {
               </div>
             ))}
           </div>
+          )}
         </div>
 
         {/* Plus Button */}
-        <div className="p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-800 space-y-2">
           <Button
             onClick={() => setShowJoinModal(true)}
             className="w-full bg-green-600 hover:bg-green-700"
           >
             <Plus className="w-5 h-5 mr-2" />
             Join Group
+          </Button>
+          <Button
+            onClick={handleSignOut}
+            variant="ghost"
+            className="w-full text-gray-400 hover:text-white hover:bg-gray-800"
+          >
+            <UserX className="w-5 h-5 mr-2" />
+            Sign Out
           </Button>
         </div>
       </div>

@@ -63,25 +63,39 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users
+DROP POLICY IF EXISTS "Users can be viewed by anyone" ON users;
 CREATE POLICY "Users can be viewed by anyone" ON users FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can insert their own profile" ON users;
 CREATE POLICY "Users can insert their own profile" ON users FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Users can update their own profile" ON users;
 CREATE POLICY "Users can update their own profile" ON users FOR UPDATE USING (true);
 
 -- RLS Policies for groups
+DROP POLICY IF EXISTS "Groups can be viewed by anyone" ON groups;
 CREATE POLICY "Groups can be viewed by anyone" ON groups FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Groups can be created by anyone" ON groups;
 CREATE POLICY "Groups can be created by anyone" ON groups FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Groups can be updated by anyone" ON groups;
 CREATE POLICY "Groups can be updated by anyone" ON groups FOR UPDATE USING (true);
 
 -- RLS Policies for group_members
+DROP POLICY IF EXISTS "Group members can be viewed by anyone" ON group_members;
 CREATE POLICY "Group members can be viewed by anyone" ON group_members FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can join groups" ON group_members;
 CREATE POLICY "Users can join groups" ON group_members FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Group members can leave" ON group_members;
 CREATE POLICY "Group members can leave" ON group_members FOR DELETE USING (true);
 
 -- RLS Policies for messages
+DROP POLICY IF EXISTS "Messages can be viewed by anyone" ON messages;
 CREATE POLICY "Messages can be viewed by anyone" ON messages FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Messages can be inserted by anyone" ON messages;
 CREATE POLICY "Messages can be inserted by anyone" ON messages FOR INSERT WITH CHECK (true);
 
 -- RLS Policies for events
+DROP POLICY IF EXISTS "Events can be viewed by anyone" ON events;
 CREATE POLICY "Events can be viewed by anyone" ON events FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Events can be inserted by anyone" ON events;
 CREATE POLICY "Events can be inserted by anyone" ON events FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Events can be deleted by anyone" ON events;
 CREATE POLICY "Events can be deleted by anyone" ON events FOR DELETE USING (true);
