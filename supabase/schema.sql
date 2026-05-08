@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS groups (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL,
   code VARCHAR(8) NOT NULL UNIQUE,
+  avatar_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -69,48 +70,18 @@ CREATE POLICY "Users can update their own profile" ON users FOR UPDATE USING (tr
 -- RLS Policies for groups
 CREATE POLICY "Groups can be viewed by anyone" ON groups FOR SELECT USING (true);
 CREATE POLICY "Groups can be created by anyone" ON groups FOR INSERT WITH CHECK (true);
-CREATE POLICY "Groups can be updated by members" ON groups FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM group_members 
-    WHERE group_members.group_id = groups.id 
-    AND group_members.user_id = auth.uid()
-  )
-);
+CREATE POLICY "Groups can be updated by anyone" ON groups FOR UPDATE USING (true);
 
 -- RLS Policies for group_members
 CREATE POLICY "Group members can be viewed by anyone" ON group_members FOR SELECT USING (true);
 CREATE POLICY "Users can join groups" ON group_members FOR INSERT WITH CHECK (true);
-CREATE POLICY "Group members can leave" ON group_members FOR DELETE USING (user_id = auth.uid());
+CREATE POLICY "Group members can leave" ON group_members FOR DELETE USING (true);
 
 -- RLS Policies for messages
-CREATE POLICY "Messages can be viewed by group members" ON messages FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM group_members 
-    WHERE group_members.group_id = messages.group_id 
-    AND group_members.user_id = auth.uid()
-  )
-);
-CREATE POLICY "Messages can be inserted by group members" ON messages FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM group_members 
-    WHERE group_members.group_id = messages.group_id 
-    AND group_members.user_id = auth.uid()
-  )
-);
+CREATE POLICY "Messages can be viewed by anyone" ON messages FOR SELECT USING (true);
+CREATE POLICY "Messages can be inserted by anyone" ON messages FOR INSERT WITH CHECK (true);
 
 -- RLS Policies for events
-CREATE POLICY "Events can be viewed by group members" ON events FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM group_members 
-    WHERE group_members.group_id = events.group_id 
-    AND group_members.user_id = auth.uid()
-  )
-);
-CREATE POLICY "Events can be inserted by group members" ON events FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM group_members 
-    WHERE group_members.group_id = events.group_id 
-    AND group_members.user_id = auth.uid()
-  )
-);
-CREATE POLICY "Events can be deleted by creator" ON events FOR DELETE USING (created_by = auth.uid());
+CREATE POLICY "Events can be viewed by anyone" ON events FOR SELECT USING (true);
+CREATE POLICY "Events can be inserted by anyone" ON events FOR INSERT WITH CHECK (true);
+CREATE POLICY "Events can be deleted by anyone" ON events FOR DELETE USING (true);

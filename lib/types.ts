@@ -8,6 +8,7 @@ export interface Group {
   id: string;
   name: string;
   code: string;
+  avatar_url?: string;
   created_at: string;
 }
 
