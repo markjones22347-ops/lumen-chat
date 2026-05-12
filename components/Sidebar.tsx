@@ -170,96 +170,72 @@ export default function Sidebar({ currentGroupId }: SidebarProps) {
 
   return (
     <>
-      <div className="w-64 bg-gray-900 dark:bg-gray-950 flex flex-col h-screen">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-          <div>
-            <h2 className="text-white font-bold text-lg">Lumen</h2>
-            <p className="text-gray-400 text-sm">{user?.nickname}</p>
+      <div className="w-20 bg-neutral-950 flex flex-col h-screen border-r border-neutral-900 relative z-40">
+        {/* Lumen Logo */}
+        <div className="p-4 flex justify-center">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+            <span className="text-black font-bold text-lg">L</span>
           </div>
         </div>
 
+        <div className="h-px bg-neutral-900 mx-3" />
+
         {/* Groups List */}
-        <div className="flex-1 overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto py-2 space-y-1">
           {groups.length === 0 ? (
-            <div className="text-gray-500 text-sm text-center mt-8 px-4">
-              <p>No groups joined yet.</p>
-              <p className="mt-1">Click below to join one!</p>
+            <div className="text-neutral-600 text-xs text-center mt-8 px-2">
+              <p>No groups</p>
             </div>
           ) : (
-          <div className="space-y-1">
-            {groups.map((group) => (
+            groups.map((group) => (
               <div
                 key={group.id}
-                className={`group relative rounded-xl p-3 cursor-pointer transition-all duration-200 ${
-                  currentGroupId === group.id
-                    ? 'bg-blue-600 text-white'
-                    : 'hover:bg-gray-800 text-gray-300 hover:text-white'
-                }`}
-                onClick={() => router.push(`/chat?group=${group.id}`)}
+                className="relative group flex justify-center py-1"
               >
-                <div className="flex items-center gap-3">
-                  {group.avatar_url ? (
-                    <img
-                      src={group.avatar_url}
-                      alt={group.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                      {group.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{group.name}</p>
-                    <p className="text-xs opacity-75">Code: {group.code}</p>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenSettings(group);
-                    }}
-                    className="p-1 hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLeaveGroup(group.id);
-                    }}
-                    className="p-1 hover:bg-red-600 rounded-lg transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
+                <button
+                  onClick={() => router.push(`/chat?group=${group.id}`)}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all duration-200 ${
+                    currentGroupId === group.id
+                      ? 'bg-white text-black rounded-2xl'
+                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:rounded-2xl'
+                  }`}
+                  title={group.name}
+                >
+                  {group.name.charAt(0).toUpperCase()}
+                </button>
+                
+                {/* Active indicator */}
+                {currentGroupId === group.id && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r" />
+                )}
+                
+                {/* Tooltip */}
+                <div className="absolute left-14 top-1/2 -translate-y-1/2 bg-neutral-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  {group.name}
                 </div>
               </div>
-            ))}
-          </div>
+            ))
           )}
         </div>
 
-        {/* Plus Button */}
-        <div className="p-4 border-t border-gray-800 space-y-2">
-          <Button
+        <div className="h-px bg-neutral-900 mx-3" />
+
+        {/* Bottom Actions */}
+        <div className="p-3 space-y-2">
+          <button
             onClick={() => setShowJoinModal(true)}
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-12 h-12 rounded-2xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white transition-all duration-200"
+            title="Join Group"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Join Group
-          </Button>
-          <Button
+            <Plus className="w-5 h-5" />
+          </button>
+          <button
             onClick={handleSignOut}
-            variant="ghost"
-            className="w-full text-gray-400 hover:text-white hover:bg-gray-800"
+            className="w-12 h-12 rounded-2xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-red-900/30 hover:text-red-400 transition-all duration-200"
+            title="Sign Out"
           >
-            <UserX className="w-5 h-5 mr-2" />
-            Sign Out
-          </Button>
+            <UserX className="w-5 h-5" />
+          </button>
         </div>
       </div>
 

@@ -183,66 +183,71 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-md transition-all duration-300 hover:shadow-3xl">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 animate-pulse">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-10">
+          <h1 className="text-6xl font-bold text-white mb-3 tracking-tight">
             Lumen
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">Private group chat & planning</p>
+          <p className="text-neutral-500 text-sm tracking-wide uppercase">Private Chat & Planning</p>
         </div>
 
         <div className="space-y-4">
           <Input
-            label="Nickname"
             placeholder="Enter your nickname"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSetNickname()}
+            className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
           />
           <Button 
             onClick={handleSetNickname} 
             disabled={loading} 
-            className="w-full transition-all duration-200 hover:scale-105 active:scale-95"
+            className="w-full bg-white text-black hover:bg-neutral-200 font-semibold rounded-xl py-3"
           >
-            {loading ? <LoadingSpinner /> : 'Set Nickname'}
+            {loading ? <LoadingSpinner /> : 'Continue'}
           </Button>
         </div>
 
         {showCreate && showJoin && (
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4 animate-fade-in">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Create a Group</h3>
+          <div className="mt-8 space-y-6 animate-fade-in">
+            <div className="h-px bg-neutral-800" />
+            
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Create New Group</h3>
               <Input
                 placeholder="Group name"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleCreateGroup()}
+                className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
               />
               <Button 
                 onClick={handleCreateGroup} 
                 disabled={loading} 
-                className="w-full mt-2 transition-all duration-200 hover:scale-105 active:scale-95"
+                className="w-full bg-white text-black hover:bg-neutral-200 font-semibold rounded-xl py-3"
               >
-                {loading ? <LoadingSpinner /> : 'Create Group'}
+                {loading ? <LoadingSpinner /> : 'Create'}
               </Button>
             </div>
 
-            <div className="pt-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Join with Code</h3>
+            <div className="h-px bg-neutral-800" />
+
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Join Existing</h3>
               <Input
-                placeholder="Enter invite code"
+                placeholder="Invite code"
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                 onKeyPress={(e) => e.key === 'Enter' && handleJoinGroup()}
+                className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
               />
               <Button 
                 onClick={handleJoinGroup} 
                 disabled={loading} 
-                variant="secondary" 
-                className="w-full mt-2 transition-all duration-200 hover:scale-105 active:scale-95"
+                className="w-full bg-neutral-800 text-white hover:bg-neutral-700 font-semibold rounded-xl py-3 border border-neutral-700"
               >
-                {loading ? <LoadingSpinner /> : 'Join Group'}
+                {loading ? <LoadingSpinner /> : 'Join'}
               </Button>
             </div>
           </div>
