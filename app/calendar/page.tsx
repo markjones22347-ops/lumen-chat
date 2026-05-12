@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { storage } from '@/lib/storage';
 import { Event } from '@/lib/types';
-import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -42,7 +41,7 @@ export default function CalendarPage() {
 
   const fetchEvents = async () => {
     if (!group) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('events')
@@ -61,7 +60,7 @@ export default function CalendarPage() {
 
   const subscribeToEvents = () => {
     if (!group) return;
-    
+
     supabase
       .channel('events')
       .on(
@@ -126,58 +125,53 @@ export default function CalendarPage() {
     }
   };
 
-  const handleLeaveGroup = () => {
-    storage.clearGroup();
-    router.push('/');
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-black flex">
+    <div className="h-screen bg-white flex text-neutral-900">
       <Sidebar currentGroupId={group?.id} />
-      
+
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <div className="h-14 bg-neutral-950 border-b border-neutral-900 flex items-center justify-between px-4 shrink-0">
+        <div className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-neutral-900 flex items-center justify-center text-white font-bold text-sm">
               {group?.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="text-white font-semibold text-sm">{group?.name} Calendar</h1>
+              <h1 className="text-neutral-900 font-semibold text-sm">{group?.name} Calendar</h1>
               <p className="text-neutral-500 text-xs">Code: {group?.code}</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={() => router.push('/chat')}
-            className="w-8 h-8 rounded-lg bg-neutral-900 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200 transition-colors border border-neutral-200"
           >
             <MessageSquare className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Events List */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 bg-white">
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-white font-semibold text-lg">Events</h2>
+              <h2 className="text-neutral-900 font-semibold text-lg">Events</h2>
               <button
+                type="button"
                 onClick={() => setShowModal(true)}
-                className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center hover:bg-neutral-200 transition-colors"
+                className="w-8 h-8 rounded-lg bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
 
             {events.length === 0 ? (
-              <div className="text-center text-neutral-600 mt-20">
+              <div className="text-center text-neutral-500 mt-20">
                 <p className="text-sm">No events yet. Plan something!</p>
               </div>
             ) : (
@@ -185,17 +179,13 @@ export default function CalendarPage() {
                 {events.map((event) => (
                   <div
                     key={event.id}
-                    className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800"
+                    className="bg-neutral-50 rounded-2xl p-4 border border-neutral-200"
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="text-white font-semibold text-base mb-2">
-                          {event.title}
-                        </h3>
+                        <h3 className="text-neutral-900 font-semibold text-base mb-2">{event.title}</h3>
                         {event.description && (
-                          <p className="text-neutral-400 text-sm mb-3">
-                            {event.description}
-                          </p>
+                          <p className="text-neutral-600 text-sm mb-3">{event.description}</p>
                         )}
                         <div className="flex items-center text-sm text-neutral-500">
                           <svg
@@ -216,8 +206,9 @@ export default function CalendarPage() {
                       </div>
                       {event.created_by === user?.id && (
                         <button
+                          type="button"
                           onClick={() => handleDeleteEvent(event.id)}
-                          className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-neutral-400 hover:bg-red-900/30 hover:text-red-400 transition-colors"
+                          className="w-8 h-8 rounded-lg bg-white border border-neutral-200 flex items-center justify-center text-neutral-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -230,7 +221,6 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Add Event Modal */}
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add New Event">
           <div className="space-y-4">
             <Input
@@ -238,32 +228,31 @@ export default function CalendarPage() {
               placeholder="What's happening?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-700 focus:ring-0"
             />
             <Input
               label="Description"
               placeholder="Add details (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-700 focus:ring-0"
             />
             <Input
               label="Date & Time"
               type="datetime-local"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-700 focus:ring-0"
             />
             <div className="flex gap-2 pt-4">
               <button
+                type="button"
                 onClick={handleAddEvent}
-                className="flex-1 bg-white text-black font-semibold py-3 rounded-xl hover:bg-neutral-200 transition-colors"
+                className="flex-1 bg-neutral-900 text-white font-semibold py-3 rounded-xl hover:bg-neutral-800 transition-colors"
               >
                 Add Event
               </button>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
-                className="flex-1 bg-neutral-900 text-white font-semibold py-3 rounded-xl border border-neutral-800 hover:bg-neutral-800 transition-colors"
+                className="flex-1 bg-neutral-100 text-neutral-900 font-semibold py-3 rounded-xl border border-neutral-200 hover:bg-neutral-200 transition-colors"
               >
                 Cancel
               </button>

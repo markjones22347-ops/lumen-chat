@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { storage } from '@/lib/storage';
+import { generateInviteCode } from '@/lib/inviteCode';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -25,15 +26,6 @@ export default function Home() {
       router.push('/chat');
     }
   }, [router]);
-
-  const generateInviteCode = (): string => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  };
 
   const handleSetNickname = async () => {
     if (!nickname.trim()) {
@@ -103,7 +95,7 @@ export default function Home() {
         return;
       }
 
-      const code = generateInviteCode();
+      const code = generateInviteCode(6);
       const { data: newGroup, error: groupError } = await supabase
         .from('groups')
         .insert([{ name: groupName.trim(), code }])
@@ -183,10 +175,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <h1 className="text-6xl font-bold text-white mb-3 tracking-tight">
+          <h1 className="text-6xl font-bold text-neutral-900 mb-3 tracking-tight">
             Lumen
           </h1>
           <p className="text-neutral-500 text-sm tracking-wide uppercase">Private Chat & Planning</p>
@@ -198,12 +190,11 @@ export default function Home() {
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSetNickname()}
-            className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
           />
-          <Button 
-            onClick={handleSetNickname} 
-            disabled={loading} 
-            className="w-full bg-white text-black hover:bg-neutral-200 font-semibold rounded-xl py-3"
+          <Button
+            onClick={handleSetNickname}
+            disabled={loading}
+            className="w-full font-semibold rounded-xl py-3"
           >
             {loading ? <LoadingSpinner /> : 'Continue'}
           </Button>
@@ -211,8 +202,8 @@ export default function Home() {
 
         {showCreate && showJoin && (
           <div className="mt-8 space-y-6 animate-fade-in">
-            <div className="h-px bg-neutral-800" />
-            
+            <div className="h-px bg-neutral-200" />
+
             <div className="space-y-3">
               <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Create New Group</h3>
               <Input
@@ -220,18 +211,13 @@ export default function Home() {
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleCreateGroup()}
-                className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
               />
-              <Button 
-                onClick={handleCreateGroup} 
-                disabled={loading} 
-                className="w-full bg-white text-black hover:bg-neutral-200 font-semibold rounded-xl py-3"
-              >
+              <Button onClick={handleCreateGroup} disabled={loading} className="w-full font-semibold rounded-xl py-3">
                 {loading ? <LoadingSpinner /> : 'Create'}
               </Button>
             </div>
 
-            <div className="h-px bg-neutral-800" />
+            <div className="h-px bg-neutral-200" />
 
             <div className="space-y-3">
               <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Join Existing</h3>
@@ -240,12 +226,12 @@ export default function Home() {
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                 onKeyPress={(e) => e.key === 'Enter' && handleJoinGroup()}
-                className="bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-0"
               />
-              <Button 
-                onClick={handleJoinGroup} 
-                disabled={loading} 
-                className="w-full bg-neutral-800 text-white hover:bg-neutral-700 font-semibold rounded-xl py-3 border border-neutral-700"
+              <Button
+                onClick={handleJoinGroup}
+                disabled={loading}
+                variant="secondary"
+                className="w-full font-semibold rounded-xl py-3"
               >
                 {loading ? <LoadingSpinner /> : 'Join'}
               </Button>

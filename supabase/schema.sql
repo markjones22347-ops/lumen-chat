@@ -99,3 +99,27 @@ DROP POLICY IF EXISTS "Events can be inserted by anyone" ON events;
 CREATE POLICY "Events can be inserted by anyone" ON events FOR INSERT WITH CHECK (true);
 DROP POLICY IF EXISTS "Events can be deleted by anyone" ON events;
 CREATE POLICY "Events can be deleted by anyone" ON events FOR DELETE USING (true);
+
+-- Storage: public stickers bucket (run once; fixes "Bucket not found" for image uploads)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'stickers',
+  'stickers',
+  true,
+  5242880,
+  ARRAY['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = EXCLUDED.public,
+  file_size_limit = EXCLUDED.file_size_limit,
+  allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+DROP POLICY IF EXISTS "stickers_select_public" ON storage.objects;
+CREATE POLICY "stickers_select_public"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'stickers');
+
+DROP POLICY IF EXISTS "stickers_insert_public" ON storage.objects;
+CREATE POLICY "stickers_insert_public"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'stickers');
